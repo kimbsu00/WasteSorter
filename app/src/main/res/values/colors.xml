@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="app_color">#43aa8b</color>
+    <color name="border_gray">#d3d4d6</color>
+
+    <!--    about MainActivity-->
+    <color name="main_background">#FFFFFF</color>
+    <color name="main_bottom_nav">#43aa8b</color>
+
+    <!--    about HomeFragment-->
+    <color name="home_light_gray">#E4E4E4</color>
 </resources>

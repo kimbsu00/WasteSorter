@@ -1,3 +1,47 @@
 <resources>
     <string name="app_name">WasteSorter</string>
+
+    <!--    about MainActivity-->
+    <string name="menu_home">메인</string>
+    <string name="menu_search">검색</string>
+    <string name="menu_info">정보</string>
+    <string name="menu_record">기록</string>
+
+    <!--    about HomeFragment-->
+    <string name="home_title_1">올바른 분리배출을 위한</string>
+    <string name="home_title_2">쓰레기 분류기</string>
+    <string name="home_start">시작하기</string>
+    <string name="home_guide_title">이용가이드</string>
+    <string name="home_gudie_1">1. 첫 번째 설명</string>
+    <string name="home_gudie_2">2. 두 번째 설명</string>
+    <string name="home_gudie_3">3. 세 번째 설명</string>
+
+    <!--    about SearchFragment-->
+    <string name="search_title">분리배출 검색</string>
+    <string name="search_hint">분리배출 항목 검색</string>
+
+    <!--    about InfoFragment-->
+    <string name="info_title">분리배출 방법</string>
+    <string name="info_plastic_1">페트병과 플라스틱 용기는 안에 내용물을 깨끗이 비워주세요.</string>
+    <string name="info_plastic_2">부착상표와 뚜껑 등 다른 재질로 된 부분은 제거해주세요.</string>
+    <string name="info_plastic_3">알약 포장재와 카세트테이프 등 여러 재질이 섞이고 분리가 어려운 제품은 종량제봉투에 담아 버려주세요.</string>
+    <string name="info_vinyl_1">과자, 라면봉지, 1회용 비닐봉투에 음식물과 이물질이 묻었다면, 물로 2~3번 헹궈 잔여물을 없애고 버려주세요.</string>
+    <string name="info_vinyl_2">이물질 제거가 어려운 경우에는 종량제봉투에 배출하시면 됩니다.</string>
+    <string name="info_styrofoam_1">라면 국물이 밴 컵라면 용기는 남아있는 음식물 찌꺼기를 물에 한 번 행군 후 버려주세요.</string>
+    <string name="info_styrofoam_2">농,수,축산물의 포장에 사용된 스티로폼은 내용물을 완전히 비우고 버려주세요.</string>
+    <string name="info_styrofoam_3">테이프나 운송장, 상표 등이 붙어있다면 완전히 제거한 뒤에 버려주세요.</string>
+    <string name="info_styrofoam_4">이물질이 많이 묻었다면 스티로폼을 쪼개 종량제봉투에 담아 버려주세요.</string>
+    <string name="info_glass_1">탄산음료 병이나 맥주병, 소주병은 담배꽁초와 같은 이물질을 넣지 말고 버려주세요.</string>
+    <string name="info_glass_2">거울, 깨진 유리, 도자기류, 유리 식기류는 유리병류가 아니기 때문에 종량제봉투나 전용 마대에 버려주세요.</string>
+
+    <!--    about RecordFragment-->
+    <string name="record_title">기록</string>
+    <string name="record_type">쓰레기 분류</string>
+    <string name="record_count">횟수</string>
+    <string name="record_total_count">전체</string>
+    <string name="record_plastic">플라스틱</string>
+    <string name="record_vinyl">비닐</string>
+    <string name="record_styrofoam">스티로폼</string>
+    <string name="record_glass">유리</string>
+    <string name="record_detail">자세히보기</string>
 </resources>
