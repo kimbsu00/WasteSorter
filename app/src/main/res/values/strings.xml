@@ -6,6 +6,7 @@
     <string name="menu_search">검색</string>
     <string name="menu_info">정보</string>
     <string name="menu_record">기록</string>
+    <string name="permission_need">카메라와 저장공간 권한이 필요합니다.</string>
 
     <!--    about HomeFragment-->
     <string name="home_title_1">올바른 분리배출을 위한</string>
@@ -15,6 +16,8 @@
     <string name="home_gudie_1">1. 첫 번째 설명</string>
     <string name="home_gudie_2">2. 두 번째 설명</string>
     <string name="home_gudie_3">3. 세 번째 설명</string>
+    <string name="home_popup_menu_1">사진 촬영</string>
+    <string name="home_popup_menu_2">갤러리</string>
 
     <!--    about SearchFragment-->
     <string name="search_title">분리배출 검색</string>
