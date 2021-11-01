@@ -1,21 +1,29 @@
 package com.butter.wastesorter.view
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import com.butter.wastesorter.R
 import com.butter.wastesorter.databinding.ActivityMainBinding
 import com.butter.wastesorter.viewmodel.MainViewModel
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,10 +41,15 @@ class MainActivity : AppCompatActivity() {
     var backPressedTime: Long = 0
     // 뒤로가기 두번 누르면 앱 종료 관련 변수 끝
 
+    val REQUEST_PERMISSION_1: Int = 1
+    val REQUEST_PERMISSION_2: Int = 2
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        checkNeedPermssion()
 
         init()
     }
@@ -51,6 +64,56 @@ class MainActivity : AppCompatActivity() {
             backPressedTime = tempTime
             val msg: String = "뒤로 가기를 한 번 더 누르면 종료됩니다."
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+
+        checkNeedPermssion()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == REQUEST_PERMISSION_1) {
+            if (permissions[0] == Manifest.permission.CAMERA && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i("onRequestPermissionsResult", "PERMISSION_GRANTED")
+            } else if (permissions[0] == Manifest.permission.WRITE_EXTERNAL_STORAGE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i("onRequestPermissionsResult", "PERMISSION_GRANTED")
+            } else {
+                Snackbar.make(
+                    binding.frameLayout,
+                    getString(R.string.permission_need),
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction("확인", View.OnClickListener {
+                    val settingIntent: Intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + packageName)
+                    )
+                    startActivity(settingIntent)
+                }).show()
+            }
+        } else if (requestCode == REQUEST_PERMISSION_2) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                Log.i("onRequestPermissionsResult", "PERMISSION_GRANTED")
+            } else {
+                Snackbar.make(
+                    binding.frameLayout,
+                    getString(R.string.permission_need),
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction("확인", View.OnClickListener {
+                    val settingIntent: Intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + packageName)
+                    )
+                    startActivity(settingIntent)
+                }).show()
+            }
         }
     }
 
@@ -74,6 +137,27 @@ class MainActivity : AppCompatActivity() {
                         or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         or View.SYSTEM_UI_FLAG_FULLSCREEN)
+        }
+    }
+
+    private fun checkNeedPermssion() {
+        val permission: ArrayList<String> = ArrayList()
+
+        if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            permission.add(Manifest.permission.CAMERA)
+        }
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            permission.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+
+        if (permission.isEmpty()) {
+            Log.i("checkNeedPermission", "PERMISSION_GRANTED")
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                permission.toTypedArray(),
+                permission.size
+            )
         }
     }
 
