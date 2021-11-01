@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "118157128302",
+    "project_id": "wastesorter-f7ce3",
+    "storage_bucket": "wastesorter-f7ce3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118157128302:android:7bffb0acf464932755ec7f",
+        "android_client_info": {
+          "package_name": "com.butter.wastesorter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "118157128302-0qlo1qc413fsac9bru94vhgt42m690qs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsz2rswU7uaN4uIFhlEupVMBt5Exr8TOU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "118157128302-0qlo1qc413fsac9bru94vhgt42m690qs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
