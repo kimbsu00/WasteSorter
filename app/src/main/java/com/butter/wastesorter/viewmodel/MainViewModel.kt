@@ -17,11 +17,14 @@ class MainViewModel : ViewModel() {
 
     private val trash: MutableLiveData<ArrayList<Trash>> = MutableLiveData()
 
+    private val selectedTrash: MutableLiveData<Int> = MutableLiveData()
+
     private val imageBitmap: MutableLiveData<Bitmap> = MutableLiveData()
 
     fun init() {
         val list: ArrayList<Trash> = ArrayList()
         trash.value = list
+        selectedTrash.value = Trash.PLASTIC
     }
 
     fun setTrash(trash: ArrayList<Trash>) {
@@ -29,6 +32,12 @@ class MainViewModel : ViewModel() {
     }
 
     fun getTrash(): ArrayList<Trash>? = trash.value
+
+    fun setSelectedTrash(trashCode: Int) {
+        this.selectedTrash.value = trashCode
+    }
+
+    fun getSelectedTrash(): Int? = selectedTrash.value
 
     fun setImageBitmap(imageBitmap: Bitmap) {
         this.imageBitmap.value = imageBitmap
