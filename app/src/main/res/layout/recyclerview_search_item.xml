@@ -18,6 +18,7 @@
         android:text="플라스틱"
         android:textColor="@color/black"
         android:textSize="14sp"
+        android:textStyle="bold"
         app:drawableRightCompat="@drawable/ic_baseline_keyboard_arrow_right_24" />
 
 </LinearLayout>
