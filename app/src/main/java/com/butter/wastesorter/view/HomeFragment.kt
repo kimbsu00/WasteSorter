@@ -38,6 +38,7 @@ class HomeFragment : Fragment() {
                 if (it.resultCode == Activity.RESULT_OK) {
                     val imageBitmap = it.data?.extras?.get("data") as Bitmap
                     binding.imageView2.setImageBitmap(imageBitmap)
+                    binding.imageView2.visibility = View.VISIBLE
 
                     mainViewModel.setImageBitmap(imageBitmap)
                     mainViewModel.uploadImage()
@@ -62,6 +63,7 @@ class HomeFragment : Fragment() {
                             )
                         }
                         binding.imageView2.setImageBitmap(imageBitmap)
+                        binding.imageView2.visibility = View.VISIBLE
 
                         mainViewModel.setImageBitmap(imageBitmap)
                         mainViewModel.uploadImage()
@@ -107,6 +109,10 @@ class HomeFragment : Fragment() {
                 Intent(requireContext(), PopupMenuActivity::class.java).also { popupMenuIntent ->
                     popupMenuLauncher.launch(popupMenuIntent)
                 }
+            }
+
+            imageView2.setOnClickListener {
+                it.visibility = View.GONE
             }
         }
     }
