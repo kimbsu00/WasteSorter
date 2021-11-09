@@ -41,17 +41,18 @@ class SearchFragment : Fragment() {
 
     private fun init() {
         if (list.isEmpty()) {
-            list.add(Trash("플라스틱"))
-            list.add(Trash("종이"))
-            list.add(Trash("상자"))
-            list.add(Trash("캔"))
-            list.add(Trash("유리"))
-            list.add(Trash("철"))
+            list.add(Trash("플라스틱", Trash.PLASTIC))
+            list.add(Trash("종이", Trash.PAPER))
+            list.add(Trash("상자", Trash.CARDBOARD))
+            list.add(Trash("캔", Trash.CAN))
+            list.add(Trash("유리", Trash.GLASS))
+            list.add(Trash("철", Trash.METAL))
         }
 
         adapter = SearchFragmentAdapter(list, list)
         adapter.listener = object : SearchFragmentAdapter.OnItemClickListener {
             override fun onItemClicked(view: View, trash: Trash) {
+                mainViewModel.setSelectedTrash(trash.code)
                 this@SearchFragment.listener?.showInfoFragment()
             }
         }
