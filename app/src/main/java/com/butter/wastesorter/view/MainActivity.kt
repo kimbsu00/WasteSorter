@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         checkNeedPermssion()
 
+        initData()
         init()
     }
 
@@ -159,6 +160,10 @@ class MainActivity : AppCompatActivity() {
                 permission.size
             )
         }
+    }
+
+    private fun initData() {
+        mainViewModel.init(this)
     }
 
     private fun init() {
