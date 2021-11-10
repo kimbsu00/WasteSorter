@@ -40,7 +40,7 @@ class HomeFragment : Fragment() {
                     binding.imageView2.setImageBitmap(imageBitmap)
                     binding.imageView2.visibility = View.VISIBLE
 
-                    mainViewModel.setImageBitmap(imageBitmap)
+                    mainViewModel.imageBitmap.value = imageBitmap
                     mainViewModel.uploadImage()
                 }
             }
@@ -65,7 +65,7 @@ class HomeFragment : Fragment() {
                         binding.imageView2.setImageBitmap(imageBitmap)
                         binding.imageView2.visibility = View.VISIBLE
 
-                        mainViewModel.setImageBitmap(imageBitmap)
+                        mainViewModel.imageBitmap.value = imageBitmap
                         mainViewModel.uploadImage()
                     }
                 }
