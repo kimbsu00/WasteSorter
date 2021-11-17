@@ -1,7 +1,6 @@
 package com.butter.wastesorter.view
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -9,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,19 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.butter.wastesorter.databinding.FragmentHomeBinding
 import com.butter.wastesorter.viewmodel.MainViewModel
-import org.pytorch.IValue
-import org.pytorch.LiteModuleLoader
-import org.pytorch.Module
-import org.pytorch.Tensor
-import org.pytorch.torchvision.TensorImageUtils
-import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
-import org.tensorflow.lite.support.image.ops.ResizeOp
-import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.OutputStream
 
 class HomeFragment : Fragment() {
 
@@ -42,8 +28,6 @@ class HomeFragment : Fragment() {
     lateinit var cameraLauncher: ActivityResultLauncher<Intent>
     lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     lateinit var popupMenuLauncher: ActivityResultLauncher<Intent>
-
-    var moduleEncoder: Module? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -136,8 +120,8 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun loadImage(bitmap: Bitmap): TensorImage {
-        
+    private fun loadImage(bitmap: Bitmap): TensorImage? {
+        return null
     }
 
 }
