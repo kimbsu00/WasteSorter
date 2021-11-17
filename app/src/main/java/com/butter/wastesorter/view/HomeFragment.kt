@@ -24,6 +24,10 @@ import org.pytorch.LiteModuleLoader
 import org.pytorch.Module
 import org.pytorch.Tensor
 import org.pytorch.torchvision.TensorImageUtils
+import org.tensorflow.lite.support.image.ImageProcessor
+import org.tensorflow.lite.support.image.TensorImage
+import org.tensorflow.lite.support.image.ops.ResizeOp
+import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -81,7 +85,7 @@ class HomeFragment : Fragment() {
                         mainViewModel.imageBitmap.value = imageBitmap
 //                        mainViewModel.uploadImage()
 
-                        Log.i("recognize", recognize(imageBitmap).toString())
+                        // task for recognize image
                     }
                 }
             }
@@ -132,55 +136,8 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun recognize(imageBitmap: Bitmap): Int {
-        if (moduleEncoder == null) {
-            val moduleFileAbsoluteFilePath: String =
-                File(assetFilePath(requireContext(), "tmp.ptl")).absolutePath
-            Log.i("recognize", moduleFileAbsoluteFilePath)
-            moduleEncoder = LiteModuleLoader.load(moduleFileAbsoluteFilePath)
-        }
-
-        // preparing input tensor
-        val inputTensor: Tensor = TensorImageUtils.bitmapToFloat32Tensor(
-            imageBitmap,
-            TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
-            TensorImageUtils.TORCHVISION_NORM_STD_RGB
-        )
-
-        // running the model
-        val outputTensor: Tensor = moduleEncoder!!.forward(IValue.from(inputTensor)).toTensor()
-
-        // getting tensor content as FloatArray
-        val scores: FloatArray = outputTensor.dataAsFloatArray
-
-        // searching for the index with maximum score
-        var maxScore: Float = Float.MIN_VALUE
-        var maxScoreIdx: Int = -1
-        for (i in scores.indices) {
-            if (scores[i] > maxScore) {
-                maxScore = scores[i]
-                maxScoreIdx = i
-            }
-        }
-
-        return maxScoreIdx
-    }
-
-    private fun assetFilePath(context: Context, assetName: String): String {
-        val file = File(context.filesDir, assetName)
-        if (file.exists() && file.length() > 0) {
-            return file.absolutePath
-        }
-
-        val inputStream: InputStream = context.assets.open(assetName)
-        val os: OutputStream = FileOutputStream(file)
-
-        var buffer: ByteArray = ByteArray(4 * 1024)
-        var read: Int = -1
-        while (inputStream.read(buffer).also { read = it } != -1) {
-            os.write(buffer, 0, read)
-        }
-        return file.absolutePath
+    private fun loadImage(bitmap: Bitmap): TensorImage {
+        
     }
 
 }

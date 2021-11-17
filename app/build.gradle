@@ -55,6 +55,6 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:28.4.2')
     implementation 'com.google.firebase:firebase-storage-ktx'
 
-    implementation 'org.pytorch:pytorch_android_lite:1.9.0'
-    implementation 'org.pytorch:pytorch_android_torchvision:1.9.0'
+    implementation 'org.tensorflow:tensorflow-lite-task-vision:0.1.0'
+    implementation 'org.tensorflow:tensorflow-lite-task-text:0.1.0'
 }
