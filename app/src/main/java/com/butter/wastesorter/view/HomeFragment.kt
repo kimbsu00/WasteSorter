@@ -1,6 +1,7 @@
 package com.butter.wastesorter.view
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -8,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +19,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.butter.wastesorter.databinding.FragmentHomeBinding
 import com.butter.wastesorter.viewmodel.MainViewModel
+import org.pytorch.IValue
+import org.pytorch.LiteModuleLoader
+import org.pytorch.Module
+import org.pytorch.Tensor
+import org.pytorch.torchvision.TensorImageUtils
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 class HomeFragment : Fragment() {
 
@@ -27,6 +38,8 @@ class HomeFragment : Fragment() {
     lateinit var cameraLauncher: ActivityResultLauncher<Intent>
     lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     lateinit var popupMenuLauncher: ActivityResultLauncher<Intent>
+
+    var moduleEncoder: Module? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,7 +79,9 @@ class HomeFragment : Fragment() {
                         binding.imageView2.visibility = View.VISIBLE
 
                         mainViewModel.imageBitmap.value = imageBitmap
-                        mainViewModel.uploadImage()
+//                        mainViewModel.uploadImage()
+
+                        Log.i("recognize", recognize(imageBitmap).toString())
                     }
                 }
             }
@@ -115,6 +130,57 @@ class HomeFragment : Fragment() {
                 it.visibility = View.GONE
             }
         }
+    }
+
+    private fun recognize(imageBitmap: Bitmap): Int {
+        if (moduleEncoder == null) {
+            val moduleFileAbsoluteFilePath: String =
+                File(assetFilePath(requireContext(), "tmp.ptl")).absolutePath
+            Log.i("recognize", moduleFileAbsoluteFilePath)
+            moduleEncoder = LiteModuleLoader.load(moduleFileAbsoluteFilePath)
+        }
+
+        // preparing input tensor
+        val inputTensor: Tensor = TensorImageUtils.bitmapToFloat32Tensor(
+            imageBitmap,
+            TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
+            TensorImageUtils.TORCHVISION_NORM_STD_RGB
+        )
+
+        // running the model
+        val outputTensor: Tensor = moduleEncoder!!.forward(IValue.from(inputTensor)).toTensor()
+
+        // getting tensor content as FloatArray
+        val scores: FloatArray = outputTensor.dataAsFloatArray
+
+        // searching for the index with maximum score
+        var maxScore: Float = Float.MIN_VALUE
+        var maxScoreIdx: Int = -1
+        for (i in scores.indices) {
+            if (scores[i] > maxScore) {
+                maxScore = scores[i]
+                maxScoreIdx = i
+            }
+        }
+
+        return maxScoreIdx
+    }
+
+    private fun assetFilePath(context: Context, assetName: String): String {
+        val file = File(context.filesDir, assetName)
+        if (file.exists() && file.length() > 0) {
+            return file.absolutePath
+        }
+
+        val inputStream: InputStream = context.assets.open(assetName)
+        val os: OutputStream = FileOutputStream(file)
+
+        var buffer: ByteArray = ByteArray(4 * 1024)
+        var read: Int = -1
+        while (inputStream.read(buffer).also { read = it } != -1) {
+            os.write(buffer, 0, read)
+        }
+        return file.absolutePath
     }
 
 }
