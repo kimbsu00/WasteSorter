@@ -194,8 +194,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        homeFragment.listener = object : HomeFragment.OnFragmentInteraction {
+            override fun showInfoFragment() {
+                binding.bottomNavBar.selectedItemId = R.id.menu_info
+            }
+        }
         searchFragment.listener = object : SearchFragment.OnFragmentInteraction {
             override fun showInfoFragment() {
+                mainViewModel.imageBitmap.value = null
                 binding.bottomNavBar.selectedItemId = R.id.menu_info
             }
         }
