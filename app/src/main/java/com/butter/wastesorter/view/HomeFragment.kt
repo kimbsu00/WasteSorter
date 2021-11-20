@@ -8,16 +8,27 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.graphics.BitmapCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.butter.wastesorter.data.ModelClasses
 import com.butter.wastesorter.databinding.FragmentHomeBinding
+import com.butter.wastesorter.ml.ConvertedModel
 import com.butter.wastesorter.viewmodel.MainViewModel
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
+import org.tensorflow.lite.support.image.ops.ResizeOp
+import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
+import org.tensorflow.lite.support.image.ops.Rot90Op
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import java.nio.ByteBuffer
 
 class HomeFragment : Fragment() {
 
@@ -29,6 +40,12 @@ class HomeFragment : Fragment() {
     lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     lateinit var popupMenuLauncher: ActivityResultLauncher<Intent>
 
+    var listener: OnFragmentInteraction? = null
+
+    interface OnFragmentInteraction {
+        fun showInfoFragment()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,12 +54,14 @@ class HomeFragment : Fragment() {
         cameraLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == Activity.RESULT_OK) {
-                    val imageBitmap = it.data?.extras?.get("data") as Bitmap
-                    binding.imageView2.setImageBitmap(imageBitmap)
-                    binding.imageView2.visibility = View.VISIBLE
-
+                    var imageBitmap = it.data?.extras?.get("data") as Bitmap
+                    // resize bitmap image
+//                    imageBitmap = resizeBitmap(imageBitmap)
                     mainViewModel.imageBitmap.value = imageBitmap
-                    mainViewModel.uploadImage()
+
+                    // task for recognize image
+                    mainViewModel.selectedTrash.value = recognize(imageBitmap)
+                    listener?.showInfoFragment()
                 }
             }
         galleryLauncher =
@@ -50,26 +69,31 @@ class HomeFragment : Fragment() {
                 if (it.resultCode == Activity.RESULT_OK) {
                     val imageUri: Uri? = it.data?.data
                     if (imageUri != null) {
-                        val imageBitmap = when {
+                        var imageBitmap = when {
                             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
                                 val source = ImageDecoder.createSource(
                                     requireContext().contentResolver,
                                     imageUri
                                 )
-                                ImageDecoder.decodeBitmap(source)
+                                ImageDecoder.decodeBitmap(
+                                    source,
+                                    ImageDecoder.OnHeaderDecodedListener { decoder, info, source ->
+                                        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                                        decoder.isMutableRequired = true
+                                    })
                             }
                             else -> MediaStore.Images.Media.getBitmap(
                                 requireContext().contentResolver,
                                 imageUri
                             )
                         }
-                        binding.imageView2.setImageBitmap(imageBitmap)
-                        binding.imageView2.visibility = View.VISIBLE
-
+                        // resize bitmap image
+//                        imageBitmap = resizeBitmap(imageBitmap)
                         mainViewModel.imageBitmap.value = imageBitmap
-//                        mainViewModel.uploadImage()
 
                         // task for recognize image
+                        mainViewModel.selectedTrash.value = recognize(imageBitmap)
+                        listener?.showInfoFragment()
                     }
                 }
             }
@@ -120,8 +144,37 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun loadImage(bitmap: Bitmap): TensorImage? {
-        return null
+    private fun resizeBitmap(bitmap: Bitmap): Bitmap =
+        Bitmap.createScaledBitmap(bitmap, 512, 384, true)
+
+    private fun recognize(bitmap: Bitmap): Int {
+        val imageProcessor: ImageProcessor =
+            ImageProcessor.Builder().add(ResizeOp(384, 512, ResizeOp.ResizeMethod.BILINEAR)).build()
+
+        val tensorImage: TensorImage = TensorImage(DataType.FLOAT32)
+        tensorImage.load(bitmap)
+        val processedImage: TensorImage = imageProcessor.process(tensorImage)
+
+        val model = ConvertedModel.newInstance(requireContext())
+
+        // Creates inputs for reference.
+        val inputFeature0 =
+            TensorBuffer.createFixedSize(intArrayOf(1, 512, 384, 3), DataType.FLOAT32)
+        inputFeature0.loadBuffer(tensorImage.buffer)
+
+        // Runs model inference and gets result.
+        val outputs = model.process(inputFeature0)
+        val outputFeature0: TensorBuffer = outputs.outputFeature0AsTensorBuffer
+
+        val results: FloatArray = outputFeature0.floatArray
+        for (idx in results.indices) {
+            Log.i("result[$idx]", "${results[idx]}")
+        }
+
+        // Releases model resources if no longer used.
+        model.close()
+
+        return 0
     }
 
 }
