@@ -4,10 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Window
-import com.butter.wastesorter.R
 import com.butter.wastesorter.databinding.ActivityPopupMenuBinding
 
 class PopupMenuActivity : Activity() {
@@ -17,7 +15,7 @@ class PopupMenuActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPopupMenuBinding.inflate(layoutInflater)
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(binding.root)
 
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
