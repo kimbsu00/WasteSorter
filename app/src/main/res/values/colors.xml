@@ -17,4 +17,7 @@
 
     <!--    about HomeFragment-->
     <color name="home_light_gray">#E4E4E4</color>
+
+    <color name="confirm_red">#c34c34</color>
+    <color name="confirm_blue">#1262c5</color>
 </resources>

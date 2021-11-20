@@ -13,6 +13,9 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainViewModel : ViewModel() {
 
@@ -20,11 +23,12 @@ class MainViewModel : ViewModel() {
 
     val selectedTrash: MutableLiveData<Int> = MutableLiveData()
 
-    val imageBitmap: MutableLiveData<Bitmap> = MutableLiveData()
+    val imageBitmap: MutableLiveData<Bitmap?> = MutableLiveData()
 
     fun init(context: Context) {
         trash.value = getInitTrashList(context)
         selectedTrash.value = Trash.PLASTIC
+        imageBitmap.value = null
     }
 
     fun uploadImage(): Boolean {
@@ -36,7 +40,22 @@ class MainViewModel : ViewModel() {
 
             val storage = Firebase.storage
             val storageRef: StorageReference = storage.reference
-            val tmpRef = storageRef.child("unrecognized/tmp.jpg")
+
+            val now: Long = System.currentTimeMillis()
+            val date: Date = Date(now)
+            val sdf: SimpleDateFormat = SimpleDateFormat("yyyy_MM_dd_hh_mm_ss")
+            val time: String = sdf.format(date)
+
+            val trashName: String = when (selectedTrash.value!!) {
+                Trash.PLASTIC -> "plastic"
+                Trash.PAPER -> "paper"
+                Trash.CARDBOARD -> "cardboard"
+                Trash.CAN -> "can"
+                Trash.GLASS -> "glass"
+                Trash.METAL -> "metal"
+                else -> "NONE"
+            }
+            val tmpRef = storageRef.child("unrecognized/" + trashName + time + ".jpg")
 
             val uploadTask = tmpRef.putBytes(data)
             uploadTask.addOnFailureListener {
