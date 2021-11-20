@@ -1,10 +1,16 @@
 package com.butter.wastesorter.view
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,11 +27,21 @@ class InfoFragment : Fragment() {
 
     lateinit var binding: FragmentInfoBinding
 
+    lateinit var submitImgLauncher: ActivityResultLauncher<Intent>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentInfoBinding.inflate(layoutInflater)
+        submitImgLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (it.resultCode == Activity.RESULT_OK) {
+                    mainViewModel.uploadImage()
+                    Toast.makeText(requireContext(), "오인식 이미지 등록이 완료되었습니다.", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
 
         init()
 
@@ -135,6 +151,13 @@ class InfoFragment : Fragment() {
                 }
             }
         })
+        mainViewModel.imageBitmap.observe(viewLifecycleOwner, Observer { bitmap ->
+            if (bitmap == null) {
+                binding.submitBtn.visibility = View.GONE
+            } else {
+                binding.submitBtn.visibility = View.VISIBLE
+            }
+        })
 
         binding.apply {
             replaceFragment(ViewPager2Fragment(Trash.PLASTIC))
@@ -143,6 +166,16 @@ class InfoFragment : Fragment() {
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             tipRecyclerView.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+            submitBtn.setOnClickListener {
+                if (mainViewModel.imageBitmap.value != null) {
+                    Intent(requireContext(), PopupSubmitActivity::class.java).also {
+                        submitImgLauncher.launch(it)
+                    }
+                } else {
+                    Log.e("InfoFragment", "imageBitmap is null")
+                }
+            }
         }
     }
 
