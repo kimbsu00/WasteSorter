@@ -18,10 +18,12 @@ import androidx.core.graphics.BitmapCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.butter.wastesorter.data.ModelClasses
+import com.butter.wastesorter.data.Trash
 import com.butter.wastesorter.databinding.FragmentHomeBinding
 import com.butter.wastesorter.ml.ConvertedModel
 import com.butter.wastesorter.viewmodel.MainViewModel
 import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.ResizeOp
@@ -54,7 +56,7 @@ class HomeFragment : Fragment() {
         cameraLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == Activity.RESULT_OK) {
-                    var imageBitmap = it.data?.extras?.get("data") as Bitmap
+                    val imageBitmap = it.data?.extras?.get("data") as Bitmap
                     // resize bitmap image
 //                    imageBitmap = resizeBitmap(imageBitmap)
                     mainViewModel.imageBitmap.value = imageBitmap
@@ -69,7 +71,7 @@ class HomeFragment : Fragment() {
                 if (it.resultCode == Activity.RESULT_OK) {
                     val imageUri: Uri? = it.data?.data
                     if (imageUri != null) {
-                        var imageBitmap = when {
+                        val imageBitmap = when {
                             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
                                 val source = ImageDecoder.createSource(
                                     requireContext().contentResolver,
@@ -149,7 +151,9 @@ class HomeFragment : Fragment() {
 
     private fun recognize(bitmap: Bitmap): Int {
         val imageProcessor: ImageProcessor =
-            ImageProcessor.Builder().add(ResizeOp(384, 512, ResizeOp.ResizeMethod.BILINEAR)).build()
+            ImageProcessor.Builder()
+                .add(ResizeOp(384, 512, ResizeOp.ResizeMethod.BILINEAR))
+                .add(NormalizeOp(0.0f, 255.0f)).build()
 
         val tensorImage: TensorImage = TensorImage(DataType.FLOAT32)
         tensorImage.load(bitmap)
@@ -160,21 +164,44 @@ class HomeFragment : Fragment() {
         // Creates inputs for reference.
         val inputFeature0 =
             TensorBuffer.createFixedSize(intArrayOf(1, 512, 384, 3), DataType.FLOAT32)
-        inputFeature0.loadBuffer(tensorImage.buffer)
+        inputFeature0.loadBuffer(processedImage.buffer)
 
         // Runs model inference and gets result.
         val outputs = model.process(inputFeature0)
         val outputFeature0: TensorBuffer = outputs.outputFeature0AsTensorBuffer
 
+        /*
+        결과 값에 대한 쓰레기 정보
+        0: CardBoard
+        1: Glass
+        2: Metal
+        3: Paper
+        4: Plastic
+        5: Trash
+        */
         val results: FloatArray = outputFeature0.floatArray
+        var max: Float = -1.0f
+        var maxIdx: Int = -1
         for (idx in results.indices) {
             Log.i("result[$idx]", "${results[idx]}")
+            if (max < results[idx]) {
+                max = results[idx]
+                maxIdx = idx
+            }
         }
 
         // Releases model resources if no longer used.
         model.close()
 
-        return 0
+        return when (maxIdx) {
+            0 -> Trash.CARDBOARD
+            1 -> Trash.GLASS
+            2 -> Trash.METAL
+            3 -> Trash.PAPER
+            4 -> Trash.PLASTIC
+            5 -> Trash.TRASH
+            else -> Trash.TRASH
+        }
     }
 
 }
