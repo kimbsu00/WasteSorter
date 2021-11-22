@@ -13,5 +13,6 @@ data class Trash(
         const val CAN: Int = 3
         const val GLASS: Int = 4
         const val METAL: Int = 5
+        const val TRASH: Int = 6
     }
 }
