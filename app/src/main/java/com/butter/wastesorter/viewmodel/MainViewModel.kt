@@ -7,7 +7,9 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.butter.wastesorter.R
+import com.butter.wastesorter.data.Record
 import com.butter.wastesorter.data.Trash
+import com.butter.wastesorter.db.MyDBHelper
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -25,10 +27,50 @@ class MainViewModel : ViewModel() {
 
     val imageBitmap: MutableLiveData<Bitmap?> = MutableLiveData()
 
+    val record: MutableLiveData<Record> = MutableLiveData()
+
+    val myDBHelper: MutableLiveData<MyDBHelper> = MutableLiveData()
+
     fun init(context: Context) {
         trash.value = getInitTrashList(context)
         selectedTrash.value = Trash.PLASTIC
         imageBitmap.value = null
+        this.record.value = null
+        myDBHelper.value = MyDBHelper(context)
+    }
+
+    fun init(context: Context, record: Record) {
+        trash.value = getInitTrashList(context)
+        selectedTrash.value = Trash.PLASTIC
+        imageBitmap.value = null
+        this.record.value = record
+        myDBHelper.value = MyDBHelper(context)
+    }
+
+    fun addRecord(code: Int, time: String) {
+        when (code) {
+            Trash.PLASTIC -> {
+                record.value!!.plastic.add(time)
+            }
+            Trash.PAPER -> {
+                record.value!!.paper.add(time)
+            }
+            Trash.CARDBOARD -> {
+                record.value!!.cardboard.add(time)
+            }
+            Trash.CAN -> {
+                record.value!!.can.add(time)
+            }
+            Trash.GLASS -> {
+                record.value!!.glass.add(time)
+            }
+            Trash.METAL -> {
+                record.value!!.metal.add(time)
+            }
+            Trash.TRASH -> {
+                record.value!!.trash.add(time)
+            }
+        }
     }
 
     fun uploadImage(): Boolean {
