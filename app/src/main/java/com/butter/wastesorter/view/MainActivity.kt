@@ -164,6 +164,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initData() {
         mainViewModel.init(this)
+        mainViewModel.record.value = mainViewModel.myDBHelper.value!!.getRecord()
     }
 
     private fun init() {
