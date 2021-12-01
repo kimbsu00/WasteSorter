@@ -14,10 +14,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.graphics.BitmapCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.butter.wastesorter.data.ModelClasses
+import androidx.lifecycle.Observer
 import com.butter.wastesorter.data.Trash
 import com.butter.wastesorter.databinding.FragmentHomeBinding
 import com.butter.wastesorter.ml.ConvertedModel
@@ -27,10 +26,9 @@ import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.ResizeOp
-import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
-import org.tensorflow.lite.support.image.ops.Rot90Op
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
-import java.nio.ByteBuffer
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -62,7 +60,8 @@ class HomeFragment : Fragment() {
                     mainViewModel.imageBitmap.value = imageBitmap
 
                     // task for recognize image
-                    mainViewModel.selectedTrash.value = recognize(imageBitmap)
+                    val code: Int = recognize(imageBitmap)
+                    taskAfterRecognize(code)
                     listener?.showInfoFragment()
                 }
             }
@@ -91,10 +90,15 @@ class HomeFragment : Fragment() {
                         }
                         // resize bitmap image
 //                        imageBitmap = resizeBitmap(imageBitmap)
+//                        binding.imageView2.visibility = View.VISIBLE
+//                        binding.imageView2.setImageBitmap(resizeBitmap(imageBitmap))
+//                        binding.imageView2.setImageBitmap(imageBitmap)
+
                         mainViewModel.imageBitmap.value = imageBitmap
 
                         // task for recognize image
-                        mainViewModel.selectedTrash.value = recognize(imageBitmap)
+                        val code: Int = recognize(imageBitmap)
+                        taskAfterRecognize(code)
                         listener?.showInfoFragment()
                     }
                 }
@@ -142,6 +146,12 @@ class HomeFragment : Fragment() {
 
             imageView2.setOnClickListener {
                 it.visibility = View.GONE
+            }
+
+            textView3.setOnClickListener {
+                Intent(requireContext(), CameraActivity::class.java).also {
+                    startActivity(it)
+                }
             }
         }
     }
@@ -202,6 +212,23 @@ class HomeFragment : Fragment() {
             5 -> Trash.TRASH
             else -> Trash.TRASH
         }
+    }
+
+    fun taskAfterRecognize(code: Int) {
+        val now: Long = System.currentTimeMillis()
+        val date: Date = Date(now)
+        val sdf: SimpleDateFormat = SimpleDateFormat("yyyy년 MM월 dd일 hh시 mm분 ss초")
+        val time: String = sdf.format(date)
+
+        mainViewModel.selectedTrash.value = code
+        mainViewModel.addRecord(code, time)
+
+        val thread: Thread = object : Thread() {
+            override fun run() {
+                mainViewModel.myDBHelper.value!!.insertRecord(code, time)
+            }
+        }
+        thread.start()
     }
 
 }
