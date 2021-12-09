@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private val homeFragment: HomeFragment = HomeFragment()
+    private val imageFragment: ImageFragment = ImageFragment()
     private val searchFragment: SearchFragment = SearchFragment()
     private val infoFragment: InfoFragment = InfoFragment()
     private val recordFragment: RecordFragment = RecordFragment()
@@ -176,6 +177,10 @@ class MainActivity : AppCompatActivity() {
                         replaceFragment(homeFragment)
                         true
                     }
+                    R.id.menu_image -> {
+                        replaceFragment(imageFragment)
+                        true
+                    }
                     R.id.menu_search -> {
                         replaceFragment(searchFragment)
                         true
@@ -196,6 +201,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         homeFragment.listener = object : HomeFragment.OnFragmentInteraction {
+            override fun showImageFragment() {
+                binding.bottomNavBar.selectedItemId = R.id.menu_image
+            }
+        }
+        imageFragment.listener = object : ImageFragment.OnFragmentInteraction {
             override fun showInfoFragment() {
                 binding.bottomNavBar.selectedItemId = R.id.menu_info
             }
