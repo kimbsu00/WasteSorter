@@ -151,7 +151,7 @@ class InfoFragment : Fragment() {
                 }
             }
         })
-        mainViewModel.imageBitmap.observe(viewLifecycleOwner, Observer { bitmap ->
+        mainViewModel.cutImageBitmap.observe(viewLifecycleOwner, Observer { bitmap ->
             if (bitmap == null) {
                 binding.submitBtn.visibility = View.GONE
             } else {
