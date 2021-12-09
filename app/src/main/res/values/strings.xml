@@ -3,6 +3,7 @@
 
     <!--    about MainActivity-->
     <string name="menu_home">메인</string>
+    <string name="menu_image">사진</string>
     <string name="menu_search">검색</string>
     <string name="menu_info">정보</string>
     <string name="menu_record">기록</string>
@@ -116,4 +117,13 @@
     <string name="submit_title">오인식 이미지 등록</string>
     <string name="submit_submit">등록</string>
     <string name="submit_cancel">취소</string>
+
+    <!--    about ImageFragment-->
+    <string name="image_title">이미지 확인</string>
+    <string name="image_no_image">촬영 또는 선택된 이미지가 없습니다.</string>
+    <string name="image_select">분리배출할 쓰레기를 선택해주세요!</string>
+    <string name="image_selected_image">선택한 이미지</string>
+    <string name="image_question">▷ 선택한 쓰레기가 맞나요?</string>
+    <string name="image_confirm">맞아요!</string>
+    <string name="image_cancel">아니에요..</string>
 </resources>
