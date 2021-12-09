@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.butter.wastesorter.R
 import com.butter.wastesorter.data.Record
+import com.butter.wastesorter.data.Rect
 import com.butter.wastesorter.data.Trash
 import com.butter.wastesorter.db.MyDBHelper
 import com.google.firebase.ktx.Firebase
@@ -27,6 +28,10 @@ class MainViewModel : ViewModel() {
 
     val imageBitmap: MutableLiveData<Bitmap?> = MutableLiveData()
 
+    val posList: MutableLiveData<ArrayList<Rect>> = MutableLiveData()
+
+    val cutImageBitmap: MutableLiveData<Bitmap?> = MutableLiveData()
+
     val record: MutableLiveData<Record> = MutableLiveData()
 
     val myDBHelper: MutableLiveData<MyDBHelper> = MutableLiveData()
@@ -35,6 +40,7 @@ class MainViewModel : ViewModel() {
         trash.value = getInitTrashList(context)
         selectedTrash.value = Trash.PLASTIC
         imageBitmap.value = null
+        cutImageBitmap.value = null
         this.record.value = null
         myDBHelper.value = MyDBHelper(context)
     }
@@ -43,6 +49,7 @@ class MainViewModel : ViewModel() {
         trash.value = getInitTrashList(context)
         selectedTrash.value = Trash.PLASTIC
         imageBitmap.value = null
+        cutImageBitmap.value = null
         this.record.value = record
         myDBHelper.value = MyDBHelper(context)
     }
@@ -74,8 +81,8 @@ class MainViewModel : ViewModel() {
     }
 
     fun uploadImage(): Boolean {
-        if (imageBitmap.value != null) {
-            val bitmap: Bitmap = imageBitmap.value!!
+        if (cutImageBitmap.value != null) {
+            val bitmap: Bitmap = cutImageBitmap.value!!
             val baos: ByteArrayOutputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
             val data = baos.toByteArray()
@@ -95,7 +102,7 @@ class MainViewModel : ViewModel() {
                 Trash.CAN -> "can"
                 Trash.GLASS -> "glass"
                 Trash.METAL -> "metal"
-                else -> "NONE"
+                else -> "undefined"
             }
             val tmpRef = storageRef.child("unrecognized/" + trashName + time + ".jpg")
 
