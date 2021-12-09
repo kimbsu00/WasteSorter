@@ -196,10 +196,14 @@ class ImageFragment : Fragment() {
 
         val ret: ArrayList<Rect> = ArrayList()
         for (i in 0..results2.size - 1) {
-            val ymin: Float = if (results0[i * 4] < 0) 0f else results0[i * 4]
-            val xmin: Float = if (results0[i * 4 + 1] < 0) 0f else results0[i * 4 + 1]
-            val ymax: Float = if (results0[i * 4 + 2] < 0) 0f else results0[i * 4 + 2]
-            val xmax: Float = if (results0[i * 4 + 3] < 0) 0f else results0[i * 4 + 3]
+            val ymin: Float =
+                if (results0[i * 4] < 0) 0f else if (results0[i * 4] > 1) 1f else results0[i * 4]
+            val xmin: Float =
+                if (results0[i * 4 + 1] < 0) 0f else if (results0[i * 4 + 1] > 1) 1f else results0[i * 4 + 1]
+            val ymax: Float =
+                if (results0[i * 4 + 2] < 0) 0f else if (results0[i * 4 + 2] > 1) 1f else results0[i * 4 + 2]
+            val xmax: Float =
+                if (results0[i * 4 + 3] < 0) 0f else if (results0[i * 4 + 3] > 1) 1f else results0[i * 4 + 3]
 
             if (results2[i] > 0.3) {
                 ret.add(Rect(xmin, ymin, xmax, ymax))
@@ -239,8 +243,6 @@ class ImageFragment : Fragment() {
                         true
                     )
                         .copy(Bitmap.Config.ARGB_8888, true)
-                Log.i("cutImageBitmap", "${scaledBitmap.width}")
-                Log.i("cutImageBitmap", "${((rect.x2 - rect.x1) * 320).toInt()}")
 
                 val cutImageBitmap: Bitmap = Bitmap.createBitmap(
                     scaledBitmap,
@@ -271,8 +273,10 @@ class ImageFragment : Fragment() {
         for (rect in posList) {
             rect.apply {
                 if (normalizeX in x1..x2 && normalizeY in y1..y2) {
+                    val centerX: Float = (x1 + x2) / 2f
+                    val centerY: Float = (y1 + y2) / 2f
                     var dist: Float =
-                        (x1 - normalizeX) * (x1 - normalizeX) + (y1 - normalizeY) * (y1 - normalizeY)
+                        (centerX - normalizeX) * (centerX - normalizeX) + (centerY - normalizeY) * (centerY - normalizeY)
                     dist = sqrt(dist)
 
                     if (dist < minDist) {
